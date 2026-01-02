@@ -1,0 +1,36 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #020617;
+  color: white;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 40px;
+}
+
+.header nav a {
+  margin-left: 20px;
+  color: white;
+  text-decoration: none;
+}
+
+.hero {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.hero-buttons .btn {
+  margin: 10px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  background: #1e293b;
+  color: white;
+  text-decoration: none;
+}
+
+.hero-buttons .primary {
+  background: #2563eb;
+}
