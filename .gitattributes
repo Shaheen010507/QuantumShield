@@ -1,0 +1,10 @@
+# Handle all files automatically
+* text=auto
+
+# Force LF endings for scripts
+*.sh text eol=lf
+*.py text eol=lf
+
+# Force CRLF endings for Windows-specific scripts
+*.bat text eol=crlf
+*.ps1 text eol=crlf
