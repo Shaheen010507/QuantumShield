@@ -1,5 +1,4 @@
-flask
-flask-pymongo
-flask-jwt-extended
-bcrypt
+Flask
 flask-cors
+psycopg2-binary
+Werkzeug

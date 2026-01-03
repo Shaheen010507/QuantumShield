@@ -1,27 +1,40 @@
+
 import "../styles/login.css";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const nav = useNavigate();
 
-  const login = (e) => {
+  const login = async (e) => {
     e.preventDefault();
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
 
-    const user = users.find(
-      u =>
-        u.username === e.target.username.value &&
-        u.password === e.target.password.value
-    );
+    const username = e.target.username.value;
+    const password = e.target.password.value;
 
-    if (!user) return alert("Invalid credentials");
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-    user.lastLogin = new Date().toLocaleString();
-    localStorage.setItem("loggedUser", JSON.stringify(user));
+      const data = await response.json();
 
-    if (user.role === "User") nav("/user");
-    if (user.role === "Banker") nav("/banker");
-    if (user.role === "Organization") nav("/org");
+      if (response.ok) {
+        // Store logged-in user info in localStorage
+        localStorage.setItem("loggedUser", JSON.stringify(data.user));
+
+        // Redirect based on role
+        if (data.user.role === "User") nav("/user");
+        if (data.user.role === "Banker") nav("/banker");
+        if (data.user.role === "Organization") nav("/org");
+      } else {
+        alert(data.error); // Show backend error
+      }
+    } catch (err) {
+      alert("Server error. Please try again later.");
+      console.error(err);
+    }
   };
 
   return (

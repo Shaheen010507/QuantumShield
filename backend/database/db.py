@@ -1,7 +1,16 @@
-from flask_pymongo import PyMongo
+# backend/database/db.py
 
-mongo = PyMongo()
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from config import DB_HOST, DB_NAME, DB_USER, DB_PASS, DB_PORT
 
-def init_db(app):
-    app.config["MONGO_URI"] = "mongodb://localhost:27017/fintech_db"
-    mongo.init_app(app)
+def get_db_connection():
+    conn = psycopg2.connect(
+        host=DB_HOST,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASS,
+        port=DB_PORT,
+        cursor_factory=RealDictCursor
+    )
+    return conn

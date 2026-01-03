@@ -1,37 +1,76 @@
+# backend/routes/auth_routes.py
+
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token
-from schemas.user_schema import create_user, find_user_by_email, update_last_login
+from werkzeug.security import generate_password_hash, check_password_hash
+from database.db import get_db_connection
+from datetime import datetime
 
-from utils.auth_utils import hash_password, check_password
-from bson.objectid import ObjectId
+auth_routes = Blueprint("auth", __name__)
 
-auth = Blueprint("auth", __name__)
-
-@auth.route("/register", methods=["POST"])
+@auth_routes.route("/register", methods=["POST"])
 def register():
     data = request.json
+    name = data.get("name")
+    username = data.get("username")
+    password = data.get("password")
+    email = data.get("email")
+    phone = data.get("phone")
+    role = data.get("role")
 
-    if find_user_by_email(data["email"]):
-        return jsonify({"msg": "User already exists"}), 400
+    if not all([name, username, password, email, phone, role]):
+        return jsonify({"error": "All fields are required"}), 400
 
-    data["password"] = hash_password(data["password"])
-    create_user(data)
+    hashed_password = generate_password_hash(password)
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "INSERT INTO users (name, username, password, email, phone, role) VALUES (%s,%s,%s,%s,%s,%s)",
+            (name, username, hashed_password, email, phone, role)
+        )
+        conn.commit()
+    except Exception as e:
+        conn.close()
+        return jsonify({"error": "Username or email already exists"}), 400
 
-    return jsonify({"msg": "Registration successful"}), 201
+    conn.close()
+    return jsonify({"message": "User registered successfully"}), 201
 
 
-@auth.route("/login", methods=["POST"])
+@auth_routes.route("/login", methods=["POST"])
 def login():
     data = request.json
-    user = find_user_by_email(data["email"])
+    username = data.get("username")
+    password = data.get("password")
 
-    if not user or not check_password(data["password"], user["password"]):
-        return jsonify({"msg": "Invalid credentials"}), 401
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+    user = cursor.fetchone()
+    conn.close()
 
-    update_last_login(user["_id"])
-    token = create_access_token(identity=str(user["_id"]))
+    if not user:
+        return jsonify({"error": "Invalid username"}), 400
 
-    return jsonify({
-        "token": token,
-        "role": user["role"]
-    }), 200
+    if not check_password_hash(user["password"], password):
+        return jsonify({"error": "Invalid password"}), 400
+
+    # Update last login
+    last_login = datetime.now()
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET last_login = %s WHERE id = %s", (last_login, user["id"]))
+    conn.commit()
+    conn.close()
+
+    user_data = {
+        "id": user["id"],
+        "name": user["name"],
+        "username": user["username"],
+        "email": user["email"],
+        "phone": user["phone"],
+        "role": user["role"],
+        "last_login": str(last_login)
+    }
+
+    return jsonify({"message": "Login successful", "user": user_data}), 200

@@ -1,19 +1,14 @@
+# backend/app.py
 
 from flask import Flask
-from flask_jwt_extended import JWTManager
 from flask_cors import CORS
-from config import Config
-from database.db import init_db
-from routes.auth_routes import auth
+from routes.auth_routes import auth_routes
 
 app = Flask(__name__)
-app.config.from_object(Config)
+CORS(app)  # Allow frontend React to call API
 
-CORS(app)
-JWTManager(app)
-init_db(app)
-
-app.register_blueprint(auth, url_prefix="/api/auth")
+# Register blueprints
+app.register_blueprint(auth_routes, url_prefix="/api/auth")
 
 if __name__ == "__main__":
     app.run(debug=True)
