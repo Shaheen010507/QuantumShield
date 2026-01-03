@@ -1,44 +1,35 @@
+import "../styles/login.css";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 export default function Login() {
-  const navigate = useNavigate();
-  const role = localStorage.getItem("role");
+  const nav = useNavigate();
 
-  const [login, setLogin] = useState({
-    email: "",
-    password: "",
-  });
+  const login = (e) => {
+    e.preventDefault();
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
 
-  const handleChange = (e) => {
-    setLogin({ ...login, [e.target.name]: e.target.value });
-  };
+    const user = users.find(
+      u =>
+        u.username === e.target.username.value &&
+        u.password === e.target.password.value
+    );
 
-  const handleLogin = () => {
-    if (role === "user") navigate("/user");
-    else if (role === "organization") navigate("/organization");
-    else if (role === "banker") navigate("/banker");
+    if (!user) return alert("Invalid credentials");
+
+    user.lastLogin = new Date().toLocaleString();
+    localStorage.setItem("loggedUser", JSON.stringify(user));
+
+    if (user.role === "User") nav("/user");
+    if (user.role === "Banker") nav("/banker");
+    if (user.role === "Organization") nav("/org");
   };
 
   return (
-    <div style={styles.container}>
+    <form className="login" onSubmit={login}>
       <h2>Login</h2>
-
-      <input name="email" placeholder="Email" onChange={handleChange} />
-      <input type="password" name="password" placeholder="Password" onChange={handleChange} />
-
-      <button onClick={handleLogin}>Login</button>
-    </div>
+      <input name="username" placeholder="Username" required />
+      <input name="password" type="password" placeholder="Password" required />
+      <button>Login</button>
+    </form>
   );
 }
-
-const styles = {
-  container: {
-    height: "100vh",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "10px",
-  },
-};

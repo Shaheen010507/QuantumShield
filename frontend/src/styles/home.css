@@ -1,36 +1,15 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #020617;
+.home {
+  height: 100vh;
+  background: linear-gradient(135deg,#020617,#1e3a8a);
   color: white;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px 40px;
-}
-
-.header nav a {
-  margin-left: 20px;
-  color: white;
-  text-decoration: none;
-}
-
-.hero {
   text-align: center;
-  padding: 80px 20px;
+  padding-top: 120px;
 }
-
-.hero-buttons .btn {
-  margin: 10px;
-  padding: 12px 24px;
-  border-radius: 8px;
-  background: #1e293b;
-  color: white;
+.buttons a {
+  margin: 20px;
+  padding: 15px 30px;
+  background: #22c55e;
+  color: black;
   text-decoration: none;
-}
-
-.hero-buttons .primary {
-  background: #2563eb;
+  border-radius: 10px;
 }

@@ -1,0 +1,79 @@
+/* src/styles/login.css */
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Center the login form */
+.login {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Login card */
+.login h2 {
+  color: #ffffff;
+  margin-bottom: 25px;
+  font-size: 28px;
+  letter-spacing: 1px;
+}
+
+/* Input fields */
+.login input {
+  width: 320px;
+  padding: 12px 14px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Focus effect */
+.login input:focus {
+  box-shadow: 0 0 0 2px rgba(32, 58, 67, 0.8);
+}
+
+/* Login button */
+.login button {
+  width: 320px;
+  padding: 12px;
+  margin-top: 10px;
+  background: #1b3b4f;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+}
+
+/* Hover animation */
+.login button:hover {
+  background: #0f2027;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* Active click */
+.login button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* Responsive */
+@media (max-width: 420px) {
+  .login input,
+  .login button {
+    width: 260px;
+  }
+}

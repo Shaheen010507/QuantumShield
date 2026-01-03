@@ -1,0 +1,39 @@
+.user-dashboard {
+  background: #020617;
+  min-height: 100vh;
+  padding: 30px;
+  color: #e5e7eb;
+}
+
+.welcome {
+  margin-bottom: 20px;
+}
+
+.card {
+  background: #0f172a;
+  padding: 20px;
+  margin-bottom: 25px;
+  border-radius: 12px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.safe {
+  color: #22c55e;
+}
+
+.danger {
+  color: #f87171;
+}
+
+.alert-box {
+  border-left: 5px solid #f87171;
+}

@@ -1,0 +1,41 @@
+/* src/styles/role.css */
+
+.role-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.role-box {
+  background: #ffffff;
+  padding: 40px;
+  width: 420px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+}
+
+.role-box h2 {
+  margin-bottom: 25px;
+  color: #203a43;
+}
+
+.role-btn {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #203a43;
+  color: white;
+  transition: 0.3s;
+}
+
+.role-btn:hover {
+  background: #0f2027;
+}

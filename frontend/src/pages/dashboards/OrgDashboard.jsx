@@ -1,26 +1,60 @@
-import { useState } from "react";
+import "../../styles/org-dashboard.css";
 
 export default function OrgDashboard() {
-  const [page, setPage] = useState("overview");
+  const user = JSON.parse(localStorage.getItem("loggedUser"));
 
   return (
-    <div style={layout}>
-      <aside style={sidebar}>
-        <h3>Organization Dashboard</h3>
-        <button onClick={() => setPage("overview")}>Overview</button>
-        <button onClick={() => setPage("users")}>User Risks</button>
-        <button onClick={() => setPage("reports")}>Reports</button>
-      </aside>
+    <div className="org-dashboard">
+      <h1>Organization Dashboard</h1>
+      <p className="welcome">Admin: {user.name}</p>
 
-      <main style={content}>
-        {page === "overview" && <h2>Organization Overview</h2>}
-        {page === "users" && <h2>User Risk Monitoring</h2>}
-        {page === "reports" && <h2>Fraud Reports</h2>}
-      </main>
+      {/* METRICS */}
+      <section className="metrics">
+        <div>Total Transactions: <b>1,420</b></div>
+        <div>High Risk: <b className="danger">18</b></div>
+        <div>Compliance Status: <b className="safe">Compliant</b></div>
+      </section>
+
+      {/* TRANSACTIONS */}
+      <section className="card">
+        <h3>Department Transactions</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Department</th>
+              <th>Txn ID</th>
+              <th>Amount</th>
+              <th>Risk</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Finance</td>
+              <td>TXN5001</td>
+              <td>₹1,20,000</td>
+              <td className="danger">High</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      {/* RISK TRAJECTORY */}
+      <section className="card">
+        <h3>Predictive Risk Trajectory</h3>
+        <p>
+          AI models indicate a rising fraud trend in Finance department.
+          Preventive controls recommended.
+        </p>
+      </section>
+
+      {/* AUDIT */}
+      <section className="card">
+        <h3>Audit & Compliance Logs</h3>
+        <p>
+          All activities logged under Zero Trust security model.
+          Blockchain audit integration planned.
+        </p>
+      </section>
     </div>
   );
 }
-
-const layout = { display: "flex", height: "100vh" };
-const sidebar = { width: "250px", background: "#ddd", padding: "20px" };
-const content = { padding: "30px" };

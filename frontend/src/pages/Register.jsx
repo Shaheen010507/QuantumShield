@@ -1,55 +1,39 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import "../styles/register.css";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const role = location.state?.role;
+  const nav = useNavigate();
+  const role = localStorage.getItem("role");
 
-  const [form, setForm] = useState({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const register = (e) => {
+    e.preventDefault();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+    const user = {
+      name: e.target.name.value,
+      username: e.target.username.value,
+      password: e.target.password.value,
+      email: e.target.email.value,
+      phone: e.target.phone.value,
+      role,
+      lastLogin: null
+    };
 
-  const handleSubmit = () => {
-    if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    users.push(user);
+    localStorage.setItem("users", JSON.stringify(users));
 
-    // TEMP: store role
-    localStorage.setItem("role", role);
-
-    navigate("/login");
+    nav("/login");
   };
 
   return (
-    <div style={styles.container}>
+    <form className="register" onSubmit={register}>
       <h2>Register as {role}</h2>
-
-      <input name="username" placeholder="Username" onChange={handleChange} />
-      <input name="email" placeholder="Email" onChange={handleChange} />
-      <input type="password" name="password" placeholder="Password" onChange={handleChange} />
-      <input type="password" name="confirmPassword" placeholder="Confirm Password" onChange={handleChange} />
-
-      <button onClick={handleSubmit}>Register</button>
-    </div>
+      <input name="name" placeholder="Full Name" required />
+      <input name="username" placeholder="Username" required />
+      <input name="email" placeholder="Email" required />
+      <input name="phone" placeholder="Phone" required />
+      <input name="password" type="password" placeholder="Password" required />
+      <button>Register</button>
+    </form>
   );
 }
-
-const styles = {
-  container: {
-    height: "100vh",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "10px",
-  },
-};
