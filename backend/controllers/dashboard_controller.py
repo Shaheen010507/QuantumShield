@@ -1,7 +1,7 @@
 from database.db import get_db_connection
 from services.rbac import require_role
 
-
+from services.xai_engine import generate_banker_xai
 def get_user_dashboard(user, user_id):
     # RBAC: only User role
     allowed, msg = require_role(user, ["User"])
@@ -22,7 +22,7 @@ def get_user_dashboard(user, user_id):
     user_data = cur.fetchone()
 
     cur.execute("""
-        SELECT id, amount, transaction_type, risk_score, status, created_at
+        SELECT id, amount, transaction_type, risk_score, status,decision_reason, created_at
         FROM transactions
         WHERE user_id = %s
         ORDER BY created_at DESC
@@ -58,19 +58,21 @@ def get_banker_dashboard(user):
     cur = conn.cursor()
 
     cur.execute("""
-        SELECT id, user_id, amount, risk_score, status, transaction_type, created_at
+        SELECT id, user_id, amount,device_id,ip_address, risk_score, status, transaction_type, created_at
         FROM transactions
         WHERE status IN ('FLAGGED', 'BLOCKED')
         ORDER BY created_at DESC
     """)
 
     transactions = cur.fetchall()
+    patterns=generate_banker_xai(transactions)
 
     cur.close()
     conn.close()
 
     return {
         "flagged_transactions": len(transactions),
+        "xai_patterns": patterns,
         "transactions": transactions
     }, 200
 
