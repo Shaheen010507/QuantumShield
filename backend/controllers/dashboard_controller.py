@@ -1,7 +1,11 @@
 from database.db import get_db_connection
 from services.rbac import require_role
-
 from services.xai_engine import generate_banker_xai
+
+
+# =========================
+# USER DASHBOARD
+# =========================
 def get_user_dashboard(user, user_id):
     # RBAC: only User role
     allowed, msg = require_role(user, ["User"])
@@ -10,25 +14,30 @@ def get_user_dashboard(user, user_id):
 
     # Ownership check
     if user["id"] != user_id:
-        return {"error": "You cannot access other users data"}, 403
+        return {"error": "You cannot access other user's data"}, 403
 
     conn = get_db_connection()
     cur = conn.cursor()
 
+    # User profile
     cur.execute("""
         SELECT id, name, username, email, role, last_login
-        FROM users WHERE id = %s
+        FROM users
+        WHERE id = %s
     """, (user_id,))
     user_data = cur.fetchone()
 
+    # User transactions
     cur.execute("""
-        SELECT id, amount, transaction_type, risk_score, status,decision_reason, created_at
+        SELECT id, amount, transaction_type, risk_score, status,
+               decision_reason, created_at
         FROM transactions
         WHERE user_id = %s
         ORDER BY created_at DESC
     """, (user_id,))
     transactions = cur.fetchall()
 
+    # Summary
     cur.execute("""
         SELECT status, COUNT(*) AS count
         FROM transactions
@@ -49,6 +58,9 @@ def get_user_dashboard(user, user_id):
     }, 200
 
 
+# =========================
+# BANKER DASHBOARD (XAI)
+# =========================
 def get_banker_dashboard(user):
     allowed, msg = require_role(user, ["Banker"])
     if not allowed:
@@ -58,24 +70,30 @@ def get_banker_dashboard(user):
     cur = conn.cursor()
 
     cur.execute("""
-        SELECT id, user_id, amount,device_id,ip_address, risk_score, status, transaction_type, created_at
+        SELECT id, user_id, amount, device_id, ip_address,
+               risk_score, status, transaction_type, created_at
         FROM transactions
         WHERE status IN ('FLAGGED', 'BLOCKED')
         ORDER BY created_at DESC
     """)
-
     transactions = cur.fetchall()
-    patterns=generate_banker_xai(transactions)
+
+    # XAI pattern extraction
+    xai_patterns = generate_banker_xai(transactions)
 
     cur.close()
     conn.close()
 
     return {
         "flagged_transactions": len(transactions),
-        "xai_patterns": patterns,
+        "xai_patterns": xai_patterns,
         "transactions": transactions
     }, 200
 
+
+# =========================
+# ORGANIZATION DASHBOARD
+# =========================
 def get_organization_dashboard(user):
     allowed, msg = require_role(user, ["Organization"])
     if not allowed:
@@ -94,7 +112,8 @@ def get_organization_dashboard(user):
 
     # All transactions
     cur.execute("""
-        SELECT id, user_id, amount, risk_score, status, transaction_type, created_at
+        SELECT id, user_id, amount, risk_score, status,
+               transaction_type, created_at
         FROM transactions
         ORDER BY created_at DESC
     """)
@@ -102,7 +121,7 @@ def get_organization_dashboard(user):
 
     # Fraud summary
     cur.execute("""
-        SELECT status, COUNT(*) 
+        SELECT status, COUNT(*) AS count
         FROM transactions
         WHERE status IN ('FLAGGED', 'BLOCKED')
         GROUP BY status
